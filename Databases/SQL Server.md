@@ -92,14 +92,14 @@ ALTER USER nombre_usuario WITH DEFAULT_SCHEMA = nombre_esquema;
 #### sysadmin
 <p align="justify">Los miembros del rol fijo de servidor sysadmin pueden realizar cualquier actividad en el servidor.</p>
 
-####serveradmin
+#### serveradmin
 <p align="justify">Los miembros del rol fijo de servidor serveradmin pueden cambiar opciones de configuración en el servidor y cerrar el servidor.</p>
 
-####securityadmin
+#### securityadmin
 <p align="justify">Los miembros del rol fijo de servidor securityadmin administran los inicios de sesión y sus propiedades. Pueden administrar los permisos de nivel de servidor GRANT, DENY, y REVOKE. securityadmin también puede administrar los permisos de GRANT, DENY y REVOKE si tiene acceso a una base de datos. Además, securityadmin puede restablecer las contraseñas de los inicios de sesión en SQL Server.
 IMPORTANTE: La capacidad de conceder acceso al motor de base de datos y configurar los permisos de usuario permite que el administrador de seguridad asigne la mayoría de los permisos de servidor. El rol securityadmin se debe tratar como equivalente al rol sysadmin . Como alternativa, a partir de SQL Server 2022 (16.x), considere la posibilidad de usar el nuevo rol fijo de servidor ##MS_LoginManager##.</p> 
 
-####processadmin
+#### processadmin
 <p align="justify">Los miembros del rol fijo de servidor processadmin pueden finalizar los procesos que se ejecutan en una instancia de SQL Server.</p>
 
 #### setupadmin
