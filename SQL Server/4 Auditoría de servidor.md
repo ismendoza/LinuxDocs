@@ -81,9 +81,12 @@ ALTER SERVER AUDIT nombre_auditoría WITH (STATE = OFF);
 DROP SERVER AUDIT auditoría;
 ```
 
-### Consultar en el servidor auditorías habilitadas
+### Consultar en el estado de las auditorías
 
 ```
 USE master
-SELECT * FROM sys.dm_server_audit_status;
+SELECT NAME, IS_STATE_ENABLED from sys.server_audits;
+SELECT NAME, IS_STATE_ENABLED from sys.server_audits WHERE NAME = 'nombre_auditoría';
 ```
+
+

@@ -38,13 +38,31 @@ ALTER SERVER AUDIT SPECIFICATION nombre_especificación WITH (STATE = ON);
 ALTER SERVER AUDIT SPECIFICATION nombre_especificación WITH (STATE = OF);
 ```
 
-#### Consultar información recolectada de la auditoría de servidor
+#### Consultar información recopilada de la auditoría de servidor
+
+```
+-- Muesta información de una auditoría que recopíla acciones de SUCCESSFUL_LOGIN_GROUP
+select server_principal_name, DATEADD(minute, datediff(minute, getutcdate(), CURRENT_TIMESTAMP), EVENT_TIME) AS EVENT_TIME, 
+session_server_principal_name, 
+server_instance_name, succeeded, session_id, client_ip, application_name, host_name 
+from sys.fn_get_audit_file('/ruta_directorio/auditoria_793B38AA-2E30-4188-8891-DE98C5B836D8_0_133706675523570000.sqlaudit',default, default);
+```
 
 
 #### Consultar en el servidor especificaciones existentes
 
 ```
 SELECT * FROM sys.server_audit_specifications;
+```
+
+#### Consultar el estado de una especificación o todas
+
+```
+SELECT name, is_state_enabled 
+    FROM sys.server_audit_specifications 
+WHERE name = 'nombre_especificación';
+
+SELECT name, is_state_enabled FROM sys.server_audit_specifications;
 ```
 
 #### Eliminar una especificación de auditoría de servidor
@@ -58,36 +76,58 @@ DROP SERVER AUDIT SPECIFICATION nombre_especificación;
 
 ```
 -- Registra inicios de sesión exitosos
-CREATE SERVER AUDIT SPECIFICATION SuccessfulLoginAudit FOR SERVER AUDIT nombre_auditoría ADD (SUCCESSFUL_LOGIN_GROUP) WITH (STATE = ON);
+CREATE SERVER AUDIT SPECIFICATION SuccessfulLoginAudit 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (SUCCESSFUL_LOGIN_GROUP) WITH (STATE = ON);
 ````
 
 ```
 -- Este evento se genera al modificar el estado del servicio de SQL Server.
-CREATE DATABASE AUDIT SPECIFICATION ServerChangeState FOR SERVER AUDIT nombre_auditoría ADD (SERVER_STATE_CHANGE_GROUP) WITH (STATE = ON);
+CREATE DATABASE AUDIT SPECIFICATION ServerChangeState 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (SERVER_STATE_CHANGE_GROUP) 
+    WITH (STATE = ON);
 ````
 
 ```
 -- Registra creación, modificación y eliminación de objetos del servidor
-CREATE SERVER AUDIT SPECIFICATION ServerObjectChange FOR SERVER AUDIT nombre_auditoría ADD (SERVER_OBJECT_CHANGE_GROUP) WITH (STATE = ON);
+CREATE SERVER AUDIT SPECIFICATION ServerObjectChange 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (SERVER_OBJECT_CHANGE_GROUP) 
+    WITH (STATE = ON);
 ````
 ```
--- Este evento se desencadena cuando se cambia una contraseña de inicio de sesión mediante la instrucción ALTER LOGIN o el procedimiento almacenado sp_password.
-CREATE SERVER AUDIT SPECIFICATION LoginChangePassword FOR SERVER AUDIT nombre_auditoría ADD (LOGIN_CHANGE_PASSWORD_GROUP) WITH (STATE = ON);
+-- Este evento se desencadena cuando se cambia una contraseña de inicio de sesión 
+-- mediante la instrucción ALTER LOGIN o el procedimiento almacenado sp_password.
+CREATE SERVER AUDIT SPECIFICATION LoginChangePassword 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (LOGIN_CHANGE_PASSWORD_GROUP) 
+    WITH (STATE = ON);
 ````
 
 ```
 -- Registra creación, modificación y eliminación de objetos de bases de datos
-CREATE DATABASE AUDIT SPECIFICATION DatabaseChanges FOR SERVER AUDIT nombre_auditoría ADD (DATABASE_OBJECT_CHANGE_GROUP) WITH (STATE = ON);
+CREATE DATABASE AUDIT SPECIFICATION DatabaseChanges 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (DATABASE_OBJECT_CHANGE_GROUP) 
+    WITH (STATE = ON);
 ````
 
 ```
 -- Este evento se desencadena cuando se agrega o quita un inicio de sesión en un rol fijo de servidor.
-CREATE DATABASE AUDIT SPECIFICATION ServerRoleMemberChange FOR SERVER AUDIT nombre_auditoría ADD (SERVER_ROLE_MEMBER_CHANGE_GROUP) WITH (STATE = ON);
+CREATE DATABASE AUDIT SPECIFICATION ServerRoleMemberChange 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (SERVER_ROLE_MEMBER_CHANGE_GROUP) 
+    WITH (STATE = ON);
 ````
 
 ```
--- Este evento se provoca al crear, modificar o quitar entidades de seguridad, como usuarios, en una base de datos.
-CREATE DATABASE AUDIT SPECIFICATION DatabasePrincipalChange FOR SERVER AUDIT nombre_auditoría ADD (DATABASE_PRINCIPAL_CHANGE_GROUP) WITH (STATE = ON);
+-- Este evento se provoca al crear, modificar o quitar entidades de seguridad, 
+-- como usuarios, en una base de datos.
+CREATE DATABASE AUDIT SPECIFICATION DatabasePrincipalChange 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (DATABASE_PRINCIPAL_CHANGE_GROUP) 
+    WITH (STATE = ON);
 ````
 
 

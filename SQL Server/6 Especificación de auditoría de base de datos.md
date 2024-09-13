@@ -33,21 +33,34 @@ USE biblioteca;
 ALTER DATABASE AUDIT SPECIFICATION auditoria_tabla_libro WITH (STATE = ON);
 ```
 
-#### Consultar en el servidor especificaciones de bases de datos existentes
+#### Consultar en una base de datos especificaciones existentes
 ```
 USE biblioteca;
 SELECT * FROM sys.database_audit_specifications;
 ```
 
+#### Consultar el estado de una especificación de base de datos o todas
+
+```
+USE biblioteca;
+SELECT name, is_state_enabled 
+    FROM sys.database_audit_specifications 
+WHERE name = 'nombre_especificacion_bd';
+
+SELECT name, is_state_enabled FROM sys.database_audit_specifications;
+```
+
 
 >La auditoría creada anteriormente tiene como consecuencia que se auditen todos los usuarios que son miembros del rol db_owner.
 
-#### Consultar información recolectada de la auditoría
+#### Consultar información recopilada de la auditoría
 
 >sys.fn_get_audit_file Devuelve información de un archivo de auditoría creado por una auditoría de servidor en SQL Server.
 ```
 USE master;
-select server_principal_name, database_name, schema_name, statement,  event_time, action_id, succeeded, session_id, client_ip, application_name, host_name 
+select server_principal_name, database_name, schema_name, statement, 
+DATEADD(minute, datediff(minute, getutcdate(), CURRENT_TIMESTAMP), EVENT_TIME) AS EVENT_TIME,
+action_id, succeeded, session_id, client_ip, application_name, host_name 
 from sys.fn_get_audit_file('/directorio/auditoria_CAC36CFD-40D6-4D73-8EA9-A17E16FC3B99_0_133705413075710000.sqlaudit',default, default);
 ```
 
@@ -62,16 +75,27 @@ DROP DATABASE AUDIT SPECIFICATION nombre_especificación;
 
 ```
 -- Este evento tiene lugar cuando se emite un comando de copia de seguridad o de restauración.
-CREATE DATABASE AUDIT SPECIFICATION BackupRestore FOR SERVER AUDIT nombre_auditoría ADD (BACKUP_RESTORE_GROUP) WITH (STATE = ON);
+CREATE DATABASE AUDIT SPECIFICATION BackupRestore 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (BACKUP_RESTORE_GROUP) 
+    WITH (STATE = ON);
 ```
 
 ```
 -- Este evento se desencadena al crear, modificar o quitar una base de datos.
-CREATE DATABASE AUDIT SPECIFICATION DatabaseChange FOR SERVER AUDIT nombre_auditoría ADD (DATABASE_CHANGE_GROUP) WITH (STATE = ON);
+CREATE DATABASE AUDIT SPECIFICATION DatabaseChange 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (DATABASE_CHANGE_GROUP) 
+    WITH (STATE = ON);
 ```
 
 ```
--- Auditoría de acciones específicas directamente en objetos de esquema y de esquema de la base de datos, como por ejemplo tablas, vistas, procedimientos almacenados, funciones, procedimientos almacenados extendidos, colas o sinónimos.
-CREATE DATABASE AUDIT SPECIFICATION TableAccess FOR SERVER AUDIT nombre_auditoría ADD (SELECT, INSERT, UPDATE, DELETE ON esquema.nombre_tabla BY PUBLIC) WITH (STATE = ON);
+/* Auditoría de acciones específicas directamente en objetos de esquema 
+    y de esquema de la base de datos, como por ejemplo tablas, vistas, procedimientos almacenados, 
+    funciones, procedimientos almacenados extendidos, colas o sinónimos.*/
+CREATE DATABASE AUDIT SPECIFICATION TableAccess 
+    FOR SERVER AUDIT nombre_auditoría 
+    ADD (SELECT, INSERT, UPDATE, DELETE ON esquema.nombre_tabla BY PUBLIC) 
+    WITH (STATE = ON);
 
 ```
